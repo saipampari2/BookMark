@@ -4,7 +4,6 @@
 
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Bookmark Maker</title>
@@ -18,16 +17,9 @@
 
         <h1>Bookmark Maker</h1>
 
-        <!-- ========================= -->
-        <!-- BOOKMARK FORM -->
-        <!-- ========================= -->
-
         <form id="bookmarkForm">
 
-            <!-- Site Name -->
-            <label for="siteNameInput">
-                Site Name
-            </label>
+            <label for="siteNameInput">Site Name</label>
 
             <input
                 type="text"
@@ -35,16 +27,10 @@
                 placeholder="Enter site name"
             >
 
-            <p
-                id="siteNameErrMsg"
-                class="error"
-            ></p>
+            <p id="siteNameErrMsg" class="error"></p>
 
 
-            <!-- Site URL -->
-            <label for="siteUrlInput">
-                Site URL
-            </label>
+            <label for="siteUrlInput">Site URL</label>
 
             <input
                 type="text"
@@ -52,68 +38,23 @@
                 placeholder="Enter site URL"
             >
 
-            <p
-                id="siteUrlErrMsg"
-                class="error"
-            ></p>
+            <p id="siteUrlErrMsg" class="error"></p>
 
 
-            <!-- Submit Button -->
-            <button
-                id="submitBtn"
-                type="submit"
-            >
+            <button id="submitBtn" type="submit">
                 Submit
             </button>
 
         </form>
 
 
-        <!-- ========================= -->
-        <!-- BOOKMARK LIST -->
-        <!-- ========================= -->
-
         <ul id="bookmarksList"></ul>
 
     </div>
-
-
-    <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
 
     <script src="script.js"></script>
 
 </body>
 
 </html>
-
-
-### Folder structure
-
-Make sure your files are like this:
-
-```text
-bookmark-maker/
-│
-├── index.html
-├── style.css
-└── script.js
-```
-
-Your HTML has:
-
-```html
-id="submitBtn"
-```
-
-and your JS has:
-
-```javascript
-document.getElementById("submitBtn")
-```
-
-So they match correctly. ✅
-
-Now **HTML + JS together support Add, Read, Edit, Delete, LocalStorage, and automatic `https://` handling**.
 
