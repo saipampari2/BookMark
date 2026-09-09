@@ -1,48 +1,41 @@
-let bookmarkForm = document.getElementById("bookmarkForm");
-
-let siteNameInput = document.getElementById("siteNameInput");
-let siteUrlInput = document.getElementById("siteUrlInput");
-
-let siteNameErrMsg = document.getElementById("siteNameErrMsg");
-let siteUrlErrMsg = document.getElementById("siteUrlErrMsg");
-
-let bookmarksList = document.getElementById("bookmarksList");
-
+```javascript
 let submitButton = document.getElementById("submitButton");
 
-// Used to store which bookmark we are editing
 let editingBookmark = null;
-
 
 // ===============================
 // SITE NAME VALIDATION
 // ===============================
 
 siteNameInput.addEventListener("change", function () {
-
     if (siteNameInput.value.trim() === "") {
         siteNameErrMsg.textContent = "Required*";
     } else {
         siteNameErrMsg.textContent = "";
     }
-
 });
-
 
 // ===============================
 // SITE URL VALIDATION
 // ===============================
 
 siteUrlInput.addEventListener("change", function () {
-
     if (siteUrlInput.value.trim() === "") {
         siteUrlErrMsg.textContent = "Required*";
     } else {
         siteUrlErrMsg.textContent = "";
     }
-
 });
 
+// ===============================
+// LOAD BOOKMARKS FROM LOCALSTORAGE
+// ===============================
+
+let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+bookmarks.forEach(function (bookmark) {
+    createBookmark(bookmark.siteName, bookmark.siteUrl);
+});
 
 // ===============================
 // FORM SUBMIT
@@ -57,44 +50,29 @@ bookmarkForm.addEventListener("submit", function (event) {
 
     let isValid = true;
 
-
     // Validate Site Name
-
     if (siteName === "") {
-
         siteNameErrMsg.textContent = "Required*";
         isValid = false;
-
     } else {
-
         siteNameErrMsg.textContent = "";
-
     }
-
 
     // Validate Site URL
-
     if (siteUrl === "") {
-
         siteUrlErrMsg.textContent = "Required*";
         isValid = false;
-
     } else {
-
         siteUrlErrMsg.textContent = "";
-
     }
 
-
     // Stop if validation fails
-
     if (!isValid) {
         return;
     }
 
-
     // ===============================
-    // UPDATE OPERATION
+    // UPDATE
     // ===============================
 
     if (editingBookmark !== null) {
@@ -107,32 +85,41 @@ bookmarkForm.addEventListener("submit", function (event) {
         link.textContent = siteUrl;
         link.href = siteUrl;
 
-        // Reset editing mode
+        // Update LocalStorage
+        let index = editingBookmark.dataset.index;
 
+        bookmarks[index].siteName = siteName;
+        bookmarks[index].siteUrl = siteUrl;
+
+        localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+
+        // Reset editing mode
         editingBookmark = null;
 
         submitButton.textContent = "Add Bookmark";
-
     }
 
     // ===============================
-    // CREATE OPERATION
+    // CREATE
     // ===============================
 
     else {
 
         createBookmark(siteName, siteUrl);
 
+        // Add to LocalStorage
+        bookmarks.push({
+            siteName: siteName,
+            siteUrl: siteUrl
+        });
+
+        localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
     }
 
-
     // Clear inputs
-
     siteNameInput.value = "";
     siteUrlInput.value = "";
-
 });
-
 
 // ===============================
 // CREATE BOOKMARK FUNCTION
@@ -141,31 +128,21 @@ bookmarkForm.addEventListener("submit", function (event) {
 function createBookmark(siteName, siteUrl) {
 
     // Create list item
-
     let listItem = document.createElement("li");
 
-
     // Create title
-
     let title = document.createElement("p");
 
     title.classList.add("bookmark-title");
-
     title.textContent = siteName;
 
-
     // Create link
-
     let link = document.createElement("a");
 
     link.classList.add("bookmark-link");
-
     link.href = siteUrl;
-
     link.target = "_blank";
-
     link.textContent = siteUrl;
-
 
     // ===============================
     // EDIT BUTTON
@@ -174,9 +151,7 @@ function createBookmark(siteName, siteUrl) {
     let editButton = document.createElement("button");
 
     editButton.classList.add("edit-btn");
-
     editButton.textContent = "Edit";
-
 
     // ===============================
     // DELETE BUTTON
@@ -185,9 +160,13 @@ function createBookmark(siteName, siteUrl) {
     let deleteButton = document.createElement("button");
 
     deleteButton.classList.add("delete-btn");
-
     deleteButton.textContent = "Delete";
 
+    // ===============================
+    // STORE INDEX
+    // ===============================
+
+    listItem.dataset.index = bookmarks.length;
 
     // ===============================
     // DELETE OPERATION
@@ -195,50 +174,54 @@ function createBookmark(siteName, siteUrl) {
 
     deleteButton.addEventListener("click", function () {
 
+        let index = Number(listItem.dataset.index);
+
+        // Remove from array
+        bookmarks.splice(index, 1);
+
+        // Update LocalStorage
+        localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+
+        // Remove from UI
         listItem.remove();
 
+        // Re-index remaining items
+        let items = bookmarksList.querySelectorAll("li");
+
+        items.forEach(function (item, newIndex) {
+            item.dataset.index = newIndex;
+        });
     });
 
-
     // ===============================
-    // UPDATE OPERATION
+    // EDIT OPERATION
     // ===============================
 
     editButton.addEventListener("click", function () {
 
         // Put old values into input
-
         siteNameInput.value = title.textContent;
 
         siteUrlInput.value = link.href;
 
-
         // Store current bookmark
-
         editingBookmark = listItem;
 
-
         // Change button text
-
         submitButton.textContent = "Update Bookmark";
-
     });
 
-
-    // Add elements to list item
+    // ===============================
+    // APPEND ELEMENTS
+    // ===============================
 
     listItem.appendChild(title);
-
     listItem.appendChild(link);
-
     listItem.appendChild(editButton);
-
     listItem.appendChild(deleteButton);
 
-
     // Add list item to bookmarks list
-
     bookmarksList.appendChild(listItem);
-
 }
-});
+```
+
