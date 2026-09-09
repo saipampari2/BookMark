@@ -1,66 +1,122 @@
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial;
-    background-color: #f5f7fa;
     margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
 }
 
 .container {
-    background-color: #2d3a8c;
-    min-height: 100vh;
-    padding: 20px;
+    width: 90%;
+    max-width: 700px;
+    margin: 50px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-    color: white;
-}
-
-form {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
 }
 
 label {
     display: block;
-    margin-top: 10px;
+    margin-top: 15px;
+    margin-bottom: 6px;
     font-weight: bold;
+    color: #333;
 }
 
 input {
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #cbd2d9;
-    border-radius: 4px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
-button {
-    margin-top: 15px;
-    padding: 10px 15px;
-    background-color: #21396c;
-    color: white;
-    border: none;
-    border-radius: 5px;
+input:focus {
+    outline: none;
+    border-color: #007bff;
 }
 
 .error {
-    color: #dc3545;
-    font-size: 12px;
+    color: red;
+    font-size: 14px;
+    margin: 5px 0;
+    min-height: 18px;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    background: white;
-    padding: 10px;
-    margin-bottom: 10px;
+#submitBtn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
     border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-a {
-    color: #2d3a8c;
+#submitBtn:hover {
+    background-color: #0056b3;
 }
+
+#bookmarksList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 30px;
+}
+
+#bookmarksList li {
+    background-color: #f1f3f5;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 7px;
+}
+
+.bookmark-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 8px;
+}
+
+.bookmark-link {
+    display: block;
+    margin-bottom: 12px;
+    color: #0066cc;
+    word-break: break-all;
+}
+
+.edit-btn,
+.delete-btn {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.edit-btn {
+    background-color: #28a745;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+}
+
+.edit-btn:hover {
+    background-color: #218838;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
