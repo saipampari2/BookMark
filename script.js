@@ -1,4 +1,4 @@
-```javascript
+
 let submitButton = document.getElementById("submitButton");
 
 let editingBookmark = null;
@@ -223,5 +223,5 @@ function createBookmark(siteName, siteUrl) {
     // Add list item to bookmarks list
     bookmarksList.appendChild(listItem);
 }
-```
+
 
