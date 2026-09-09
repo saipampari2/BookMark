@@ -1,45 +1,104 @@
 
-let submitButton = document.getElementById("submitButton");
 
-let editingBookmark = null;
+// ======================================
+// GET HTML ELEMENTS
+// ======================================
 
-// ===============================
+let bookmarkForm = document.getElementById("bookmarkForm");
+
+let siteNameInput = document.getElementById("siteNameInput");
+let siteUrlInput = document.getElementById("siteUrlInput");
+
+let siteNameErrMsg = document.getElementById("siteNameErrMsg");
+let siteUrlErrMsg = document.getElementById("siteUrlErrMsg");
+
+let submitButton = document.getElementById("submitBtn");
+
+let bookmarksList = document.getElementById("bookmarksList");
+
+
+// ======================================
+// LOCAL STORAGE
+// ======================================
+
+let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+
+// ======================================
+// FIX OLD URLS
+// ======================================
+
+bookmarks = bookmarks.map(function (bookmark) {
+
+    let url = bookmark.siteUrl.trim();
+
+    if (
+        !url.startsWith("http://") &&
+        !url.startsWith("https://")
+    ) {
+        url = "https://" + url;
+    }
+
+    return {
+        siteName: bookmark.siteName,
+        siteUrl: url
+    };
+});
+
+localStorage.setItem(
+    "bookmarks",
+    JSON.stringify(bookmarks)
+);
+
+
+// ======================================
+// DISPLAY SAVED BOOKMARKS
+// ======================================
+
+bookmarks.forEach(function (bookmark, index) {
+
+    createBookmark(
+        bookmark.siteName,
+        bookmark.siteUrl,
+        index
+    );
+
+});
+
+
+// ======================================
 // SITE NAME VALIDATION
-// ===============================
+// ======================================
 
 siteNameInput.addEventListener("change", function () {
+
     if (siteNameInput.value.trim() === "") {
         siteNameErrMsg.textContent = "Required*";
     } else {
         siteNameErrMsg.textContent = "";
     }
+
 });
 
-// ===============================
+
+// ======================================
 // SITE URL VALIDATION
-// ===============================
+// ======================================
 
 siteUrlInput.addEventListener("change", function () {
+
     if (siteUrlInput.value.trim() === "") {
         siteUrlErrMsg.textContent = "Required*";
     } else {
         siteUrlErrMsg.textContent = "";
     }
+
 });
 
-// ===============================
-// LOAD BOOKMARKS FROM LOCALSTORAGE
-// ===============================
 
-let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
-
-bookmarks.forEach(function (bookmark) {
-    createBookmark(bookmark.siteName, bookmark.siteUrl);
-});
-
-// ===============================
+// ======================================
 // FORM SUBMIT
-// ===============================
+// ======================================
 
 bookmarkForm.addEventListener("submit", function (event) {
 
@@ -50,177 +109,271 @@ bookmarkForm.addEventListener("submit", function (event) {
 
     let isValid = true;
 
-    // Validate Site Name
+
+    // ==================================
+    // VALIDATE SITE NAME
+    // ==================================
+
     if (siteName === "") {
+
         siteNameErrMsg.textContent = "Required*";
         isValid = false;
+
     } else {
+
         siteNameErrMsg.textContent = "";
+
     }
 
-    // Validate Site URL
+
+    // ==================================
+    // VALIDATE SITE URL
+    // ==================================
+
     if (siteUrl === "") {
+
         siteUrlErrMsg.textContent = "Required*";
         isValid = false;
+
     } else {
+
         siteUrlErrMsg.textContent = "";
+
     }
+
 
     // Stop if validation fails
     if (!isValid) {
         return;
     }
 
-    // ===============================
-    // UPDATE
-    // ===============================
+
+    // ==================================
+    // ADD HTTPS
+    // ==================================
+
+    if (
+        !siteUrl.startsWith("http://") &&
+        !siteUrl.startsWith("https://")
+    ) {
+        siteUrl = "https://" + siteUrl;
+    }
+
+
+    // ==================================
+    // UPDATE BOOKMARK
+    // ==================================
 
     if (editingBookmark !== null) {
 
-        let title = editingBookmark.querySelector(".bookmark-title");
-        let link = editingBookmark.querySelector(".bookmark-link");
+        let index = Number(editingBookmark.dataset.index);
+
+        let title =
+            editingBookmark.querySelector(".bookmark-title");
+
+        let link =
+            editingBookmark.querySelector(".bookmark-link");
 
         title.textContent = siteName;
 
         link.textContent = siteUrl;
+
         link.href = siteUrl;
 
+
+        // Update array
+        bookmarks[index] = {
+            siteName: siteName,
+            siteUrl: siteUrl
+        };
+
+
         // Update LocalStorage
-        let index = editingBookmark.dataset.index;
+        localStorage.setItem(
+            "bookmarks",
+            JSON.stringify(bookmarks)
+        );
 
-        bookmarks[index].siteName = siteName;
-        bookmarks[index].siteUrl = siteUrl;
 
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
-
-        // Reset editing mode
+        // Exit edit mode
         editingBookmark = null;
 
-        submitButton.textContent = "Add Bookmark";
+        submitButton.textContent = "Submit";
+
     }
 
-    // ===============================
-    // CREATE
-    // ===============================
+
+    // ==================================
+    // CREATE BOOKMARK
+    // ==================================
 
     else {
 
-        createBookmark(siteName, siteUrl);
-
-        // Add to LocalStorage
         bookmarks.push({
             siteName: siteName,
             siteUrl: siteUrl
         });
 
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+
+        // Save to LocalStorage
+        localStorage.setItem(
+            "bookmarks",
+            JSON.stringify(bookmarks)
+        );
+
+
+        // Create UI
+        createBookmark(
+            siteName,
+            siteUrl,
+            bookmarks.length - 1
+        );
+
     }
+
 
     // Clear inputs
     siteNameInput.value = "";
     siteUrlInput.value = "";
+
 });
 
-// ===============================
-// CREATE BOOKMARK FUNCTION
-// ===============================
 
-function createBookmark(siteName, siteUrl) {
+// ======================================
+// EDITING VARIABLE
+// ======================================
 
-    // Create list item
+let editingBookmark = null;
+
+
+// ======================================
+// CREATE BOOKMARK
+// ======================================
+
+function createBookmark(siteName, siteUrl, index) {
+
     let listItem = document.createElement("li");
 
-    // Create title
+    listItem.dataset.index = index;
+
+
+    // ==================================
+    // TITLE
+    // ==================================
+
     let title = document.createElement("p");
 
     title.classList.add("bookmark-title");
+
     title.textContent = siteName;
 
-    // Create link
+
+    // ==================================
+    // LINK
+    // ==================================
+
     let link = document.createElement("a");
 
     link.classList.add("bookmark-link");
+
+    if (
+        !siteUrl.startsWith("http://") &&
+        !siteUrl.startsWith("https://")
+    ) {
+        siteUrl = "https://" + siteUrl;
+    }
+
     link.href = siteUrl;
+
     link.target = "_blank";
+
+    link.rel = "noopener noreferrer";
+
     link.textContent = siteUrl;
 
-    // ===============================
+
+    // ==================================
     // EDIT BUTTON
-    // ===============================
+    // ==================================
 
     let editButton = document.createElement("button");
 
     editButton.classList.add("edit-btn");
+
     editButton.textContent = "Edit";
 
-    // ===============================
+
+    // ==================================
     // DELETE BUTTON
-    // ===============================
+    // ==================================
 
     let deleteButton = document.createElement("button");
 
     deleteButton.classList.add("delete-btn");
+
     deleteButton.textContent = "Delete";
 
-    // ===============================
-    // STORE INDEX
-    // ===============================
 
-    listItem.dataset.index = bookmarks.length;
-
-    // ===============================
-    // DELETE OPERATION
-    // ===============================
+    // ==================================
+    // DELETE
+    // ==================================
 
     deleteButton.addEventListener("click", function () {
 
         let index = Number(listItem.dataset.index);
 
-        // Remove from array
         bookmarks.splice(index, 1);
 
-        // Update LocalStorage
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+        localStorage.setItem(
+            "bookmarks",
+            JSON.stringify(bookmarks)
+        );
 
-        // Remove from UI
         listItem.remove();
 
-        // Re-index remaining items
-        let items = bookmarksList.querySelectorAll("li");
+
+        // Re-index
+        let items =
+            bookmarksList.querySelectorAll("li");
 
         items.forEach(function (item, newIndex) {
+
             item.dataset.index = newIndex;
+
         });
+
     });
 
-    // ===============================
-    // EDIT OPERATION
-    // ===============================
+
+    // ==================================
+    // EDIT
+    // ==================================
 
     editButton.addEventListener("click", function () {
 
-        // Put old values into input
         siteNameInput.value = title.textContent;
 
         siteUrlInput.value = link.href;
 
-        // Store current bookmark
         editingBookmark = listItem;
 
-        // Change button text
-        submitButton.textContent = "Update Bookmark";
+        submitButton.textContent = "Update";
+
     });
 
-    // ===============================
-    // APPEND ELEMENTS
-    // ===============================
+
+    // ==================================
+    // APPEND
+    // ==================================
 
     listItem.appendChild(title);
+
     listItem.appendChild(link);
+
     listItem.appendChild(editButton);
+
     listItem.appendChild(deleteButton);
 
-    // Add list item to bookmarks list
     bookmarksList.appendChild(listItem);
 }
 
